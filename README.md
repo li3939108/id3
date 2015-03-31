@@ -6,6 +6,6 @@ The training set is defined at the top of the file, named "$training_set"
 To execute
 run 
 
-  $ ruby id3.rb > tree.dot
+   $ ruby id3.rb > tree.dot
 
 and you can get a dot format tree.
