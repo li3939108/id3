@@ -19,7 +19,6 @@ class Dot_gen
 		@node_number = 0	
 		@root = root_node
 	end
-	#print "digraph decision_tree{"
 	def gen_node(node)
 		@node_number += 1
 		node.set_id( @node_number )
@@ -36,7 +35,7 @@ class Dot_gen
 	end
 end
 
-class Treenode
+class Tree_node
 	def initialize(type, attr_or_label, children = [])
 		#types can be ":label" or ":attr"
 		@type = type
@@ -84,9 +83,9 @@ def id3(dataset, target_attr, attrs)
 	majority_target = target_values[occurance_counts_arr.index(occurance_counts_arr.max)]
 	init_entropy = entropy(occurance_counts_arr)
 	if(target_arr.uniq.length == 1)
-		Treenode.new(:label, target_arr[0])
+		Tree_node.new(:label, target_arr[0])
 	elsif(attrs.empty?)
-		Treenode.new(:label, majority_target)
+		Tree_node.new(:label, majority_target)
 	else
 		gain_arr = attrs.map do |attr|
 			attr_values = $attr_possible_values[attr]
@@ -101,19 +100,17 @@ def id3(dataset, target_attr, attrs)
 				attr_occurance_counts_arr = target_values.map do |target_value|
 					attr_target_arr.count(target_value)
 				end
-				#print attr_occurance_counts_arr, "\n"
 				(counts + 0.0) / dataset.length * entropy(attr_occurance_counts_arr)
 			}.reduce(0, :+)
 			init_entropy - attr_entropy
 		end
-		#print gain_arr
 		selected_attr = attrs[gain_arr.index(gain_arr.max)]
-		treenode = Treenode.new(:attr, selected_attr)
+		treenode = Tree_node.new(:attr, selected_attr)
 		empty_attr_value_arr = $attr_possible_values[selected_attr].select{|attr_value|
 			dataset.select{|point| point[selected_attr] == attr_value }.empty?
 		}
 		empty_attr_value_arr.each do |attr_value|
-			treenode.add_child(attr_value , Treenode.new(:label, majority_target) )
+			treenode.add_child(attr_value , Tree_node.new(:label, majority_target) )
 		end
 		#create attribute nodes
 		($attr_possible_values[selected_attr] - empty_attr_value_arr).each do |attr_value|
@@ -140,4 +137,3 @@ initialize_attr_values($training_set)
 $root = id3($training_set, 'Decision', $training_set[0].keys)
 
 Dot_gen.new($root).do
-
