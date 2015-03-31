@@ -14,7 +14,27 @@ $training_set = [
 	{'Age'=> 2, 'Sex'=> 'Female' ,'Breed'=> 'Australian Shepherd' , 'Decision'=> 'N'},
 ]                                                                                   
 
-
+class Dot_gen
+	def initialize(root_node)
+		@node_number = 0	
+		@root = root_node
+	end
+	#print "digraph decision_tree{"
+	def gen_node(node)
+		@node_number += 1
+		node.set_id( @node_number )
+		print "\t#{node.type}#{@node_number} [shape=\"rectangle\", label=\"#{node.value}\"] ;\n"
+		node.children.each do |child|
+			self.gen_node(child[1])
+			print "\t#{node.type}#{node.id} -> #{child[1].type}#{child[1].id} [label = \"#{child[0]}\"] ;\n"
+		end
+	end
+	def do
+		print "digraph decision_tree{\n"
+		self.gen_node(@root)
+		print "}\n"
+	end
+end
 
 class Treenode
 	def initialize(type, attr_or_label, children = [])
@@ -22,6 +42,7 @@ class Treenode
 		@type = type
 		@value = attr_or_label
 		@children = children
+		@id = nil
 	end
 	def type
 		@type
@@ -34,6 +55,12 @@ class Treenode
 	end
 	def add_child(value, node)
 		@children.push([value, node])
+	end
+	def id
+		@id
+	end
+	def set_id(number)
+		@id = number
 	end
 end
 
@@ -74,12 +101,12 @@ def id3(dataset, target_attr, attrs)
 				attr_occurance_counts_arr = target_values.map do |target_value|
 					attr_target_arr.count(target_value)
 				end
-				print attr_occurance_counts_arr, "\n"
+				#print attr_occurance_counts_arr, "\n"
 				(counts + 0.0) / dataset.length * entropy(attr_occurance_counts_arr)
 			}.reduce(0, :+)
 			init_entropy - attr_entropy
 		end
-		print gain_arr
+		#print gain_arr
 		selected_attr = attrs[gain_arr.index(gain_arr.max)]
 		treenode = Treenode.new(:attr, selected_attr)
 		empty_attr_value_arr = $attr_possible_values[selected_attr].select{|attr_value|
@@ -110,4 +137,7 @@ def entropy(counts)
 	}.reduce(0, :+)
 end
 initialize_attr_values($training_set)
-id3($training_set, 'Decision', $training_set[0].keys)
+$root = id3($training_set, 'Decision', $training_set[0].keys)
+
+Dot_gen.new($root).do
+
