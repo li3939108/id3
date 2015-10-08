@@ -21,7 +21,7 @@ class Dot_gen
 	end
 	def gen_node(node)
 		@node_number += 1
-		node.set_id( @node_number )
+		node.id= @node_number 
 		print "\t#{node.type}#{@node_number} [shape=\"rectangle\", label=\"#{node.value}\"] ;\n"
 		node.children.each do |child|
 			self.gen_node(child[1])
