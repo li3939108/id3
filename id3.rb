@@ -43,23 +43,10 @@ class Tree_node
 		@children = children
 		@id = nil
 	end
-	def type
-		@type
-	end
-	def value
-		@value
-	end
-	def children
-		@children
-	end
+	attr_reader :type, :value, :children
+	attr_accessor :id
 	def add_child(value, node)
 		@children.push([value, node])
-	end
-	def id
-		@id
-	end
-	def set_id(number)
-		@id = number
 	end
 end
 
